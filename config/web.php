@@ -33,6 +33,9 @@ return [
             'class' => \hipanel\modules\kyc\Module::class,
         ],
     ],
+    'bootstrap' => [
+        \hipanel\modules\kyc\bootstrap\KYCVerificationBootstrap::class,
+    ],
     'container' => [
         'definitions' => [
         ],
