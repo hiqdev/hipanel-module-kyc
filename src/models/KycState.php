@@ -14,6 +14,7 @@ enum KycState: string
     case Resubmission = 'resubmission';
     case Abandoned = 'abandoned';
     case Review = 'review';
+    case Submitted = 'submitted';
     case Manual = 'manual';
 
     public function label(): string
@@ -24,8 +25,8 @@ enum KycState: string
     public function clientLabel(): ?string
     {
         return match ($this) {
-            self::New, self::Started => Yii::t('hipanel.kyc', 'In progress'),
-            self::Approved => Yii::t('hipanel.kyc', 'Verified'),
+            self::New, self::Started, self::Submitted => Yii::t('hipanel.kyc', 'In progress'),
+            self::Approved, self::Manual => Yii::t('hipanel.kyc', 'Verified'),
             default => null,
         };
     }
@@ -41,6 +42,7 @@ enum KycState: string
             KycState::Resubmission => Yii::t('hipanel.kyc', 'Resubmission'),
             KycState::Abandoned => Yii::t('hipanel.kyc', 'Abandoned'),
             KycState::Review => Yii::t('hipanel.kyc', 'Review'),
+            KycState::Submitted => Yii::t('hipanel.kyc', 'Submitted'),
             KycState::Manual => Yii::t('hipanel.kyc', 'Manual'),
         };
     }
@@ -56,6 +58,7 @@ enum KycState: string
             KycState::Resubmission->value => KycState::Resubmission->label(),
             KycState::Abandoned->value    => KycState::Abandoned->label(),
             KycState::Review->value       => KycState::Review->label(),
+            KycState::Submitted->value    => KycState::Submitted->label(),
             KycState::Manual->value       => KycState::Manual->label(),
         ];
     }
