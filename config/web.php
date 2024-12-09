@@ -34,7 +34,7 @@ return [
         ],
     ],
     'bootstrap' => [
-        \hipanel\modules\kyc\bootstrap\KYCVerificationBootstrap::class,
+        // \hipanel\modules\kyc\bootstrap\KYCVerificationBootstrap::class,
     ],
     'container' => [
         'definitions' => [

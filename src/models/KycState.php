@@ -11,7 +11,7 @@ enum KycState: string
     case Approved = 'approved';
     case Declined = 'declined';
     case Failed = 'failed';
-    case Resubmission = 'resubmission';
+    case Resubmission = 'resubmission_requested';
     case Abandoned = 'abandoned';
     case Review = 'review';
     case Submitted = 'submitted';
