@@ -56,7 +56,7 @@ class KycColumn extends DataColumn
 
     private function isAdvancedAccess(): bool
     {
-        return !Yii::$app->user->can('contact.force-verify');
+        return Yii::$app->user->can('contact.force-verify');
     }
 
     private function getKycModel($model): ?Kyc
