@@ -1,58 +1,35 @@
-<?php
-/**
- * Client module for HiPanel
- *
- * @link      https://github.com/hiqdev/hipanel-module-client
- * @package   hipanel-module-client
- * @license   BSD-3-Clause
- * @copyright Copyright (c) 2015-2019, HiQDev (http://hiqdev.com/)
- */
+<?php declare(strict_types=1);
 
 namespace hipanel\modules\kyc\controllers;
 
-use hipanel\actions\ComboSearchAction;
-use hipanel\actions\IndexAction;
-use hipanel\actions\RenderJsonAction;
-use hipanel\actions\SmartDeleteAction;
-use hipanel\actions\SmartPerformAction;
+use Exception;
 use hipanel\actions\SmartUpdateAction;
-use hipanel\actions\ValidateFormAction;
-use hipanel\actions\ViewAction;
 use hipanel\base\CrudController;
 use hipanel\filters\EasyAccessControl;
 use hipanel\helpers\ArrayHelper;
-use hipanel\modules\client\models\Contact;
-use hipanel\modules\client\models\query\ContactQuery;
-use hipanel\modules\client\models\Verification;
-use hipanel\modules\client\repositories\NotifyTriesRepository;
-use hipanel\modules\document\models\Document;
+use hipanel\modules\kyc\models\Kyc;
+use RuntimeException;
 use Yii;
-use yii\base\Event;
 use yii\filters\VerbFilter;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
-use yii\helpers\Html;
-use hipanel\helpers\Url;
 
 class KycController extends CrudController
 {
-    /**
-     * {@inheritdoc}
-     */
     public function behaviors()
     {
         return ArrayHelper::merge(parent::behaviors(), [
             [
-                'class' => EasyAccessControl::class,
+                'class'   => EasyAccessControl::class,
                 'actions' => [
-                    'set-verified' => 'contact.force-verify',
-                    '*' => 'contact.force-verify',
+                    'set-status' => 'contact.force-verify',
+                    'verify'     => 'contact.read',
+                    '*'          => 'contact.read',
                 ],
             ],
             [
-                'class' => VerbFilter::class,
+                'class'   => VerbFilter::class,
                 'actions' => [
-                    'set-verified' => ['post'],
+                    'set-status' => ['post'],
+                    'verify'     => ['get'],
                 ],
             ],
         ]);
@@ -61,37 +38,26 @@ class KycController extends CrudController
     public function actions()
     {
         return [
-            'set-verified' => [
-                'class' => SmartPerformAction::class,
-                'success' => Yii::t('hipanel:client', 'Client verification status has been changed'),
-                'POST ajax' => [
-                    'save' => true,
-                    'flash' => true,
-                    'success' => [
-                        'class' => RenderJsonAction::class,
-                        'return' => function ($action) {
-                            $message = Yii::$app->session->removeFlash('success');
-
-                            return [
-                                'success' => true,
-                                'text' => Yii::t('hipanel:client', reset($message)['text']),
-                            ];
-                        },
-                    ],
-                    'error' => [
-                        'class' => RenderJsonAction::class,
-                        'return' => function ($action) {
-                            $message = Yii::$app->session->removeFlash('error');
-
-                            return [
-                                'success' => false,
-                                'text' => reset($message)['text'],
-                            ];
-                        },
-                    ],
-                ],
+            'set-status' => [
+                'class'    => SmartUpdateAction::class,
+                'success'  => Yii::t('hipanel:client', 'Client verification status has been changed'),
+                'scenario' => 'update',
             ],
         ];
     }
 
+    public function actionVerify($id)
+    {
+        try {
+            $response = Kyc::perform('prepare-info', ['contact_id' => $id]);
+            if (isset($response['url'])) {
+                return $this->redirect($response['url']);
+            }
+            throw new RuntimeException('Failed to get KYC URL');
+        } catch (Exception $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect($this->request->getReferrer());
+    }
 }

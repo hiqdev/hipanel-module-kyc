@@ -21,7 +21,7 @@ return [
         ],
         'i18n' => [
             'translations' => [
-                'hipanel:kyc' => [
+                'hipanel.kyc' => [
                     'class' => \yii\i18n\PhpMessageSource::class,
                     'basePath' => dirname(__DIR__) . '/src/messages',
                 ],
