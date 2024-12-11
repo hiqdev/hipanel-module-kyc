@@ -15,18 +15,18 @@ class KycVerifyButton extends Widget
 
     public function run(): string
     {
-        $statusLabel = $this->model ? $this->model->getClientStatusLabel() : '';
-        if ($statusLabel === 'In progress') {
-            return Html::a($statusLabel, $this->model->getSessionUrl(), ['target' => '_blank']);
+        $outputParts = [];
+        if ($this->model->needToShowStatus()) {
+            $outputParts[] = Html::a($this->model->getStatusLabel(), $this->model->getSessionUrl(), ['target' => '_blank']);
+        }
+        if ($this->model->needToShowButton()) {
+            $outputParts[] = Html::a(
+                Yii::t('hipanel.kyc', 'Verify via KYC'),
+                Url::toRoute(['@kyc/verify', 'id' => $this->contactId, 'returnUrl' => Url::to('@client/view', ['id' => $this->contactId])]),
+                ['class' => 'btn btn-xs btn-warning kyc-verify-button']
+            );
         }
 
-        return Html::tag('span', implode(' ', [
-            $statusLabel,
-            !$statusLabel ? Html::a(
-                Yii::t('hipanel.kyc', 'Verify via KYC'),
-                Url::toRoute(['@kyc/verify', 'id' => $this->contactId]),
-                ['class' => 'btn btn-xs btn-warning kyc-verify-button']
-            ) : '',
-        ]), ['class' => 'space-sm']);
+        return Html::tag('span', implode('', $outputParts), ['class' => 'space-sm']);
     }
 }

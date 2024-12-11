@@ -7,7 +7,6 @@ use hipanel\helpers\Url;
 use hipanel\modules\client\models\Client;
 use hipanel\modules\client\models\Contact;
 use hipanel\modules\kyc\models\Kyc;
-use hipanel\modules\kyc\models\KycState;
 use hipanel\modules\kyc\widgets\KycVerifyButton;
 use hiqdev\xeditable\widgets\XEditable;
 use Yii;
@@ -28,10 +27,10 @@ class KycColumn extends DataColumn
         $this->filter = $this->isAdvancedAccess() ? fn($column, $model, $attribute): string => Html::activeDropDownList(
             $model,
             $attribute,
-            KycState::getOptions(),
+            Kyc::getStatusOptions(),
             [
                 'prompt' => '--',
-                'class'  => 'form-control',
+                'class' => 'form-control',
             ]
         ) : false;
     }
@@ -41,12 +40,12 @@ class KycColumn extends DataColumn
         $kyc = $this->getKycModel($model);
         if ($this->isAdvancedAccess()) {
             return XEditable::widget([
-                'model'         => $kyc,
-                'attribute'     => 'state',
+                'model' => $kyc,
+                'attribute' => 'state',
                 'pluginOptions' => [
-                    'url'    => Url::toRoute(['@kyc/set-status']),
-                    'type'   => 'select',
-                    'source' => KycState::getOptions(),
+                    'url' => Url::toRoute(['@kyc/set-status']),
+                    'type' => 'select',
+                    'source' => $kyc->getStatusOptions(),
                 ],
             ]);
         }
