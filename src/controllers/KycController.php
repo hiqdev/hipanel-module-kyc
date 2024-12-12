@@ -11,6 +11,7 @@ use hipanel\modules\kyc\models\Kyc;
 use RuntimeException;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 
 class KycController extends CrudController
 {
@@ -49,7 +50,10 @@ class KycController extends CrudController
     public function actionVerify($id)
     {
         try {
-            $response = Kyc::perform('prepare-info', ['contact_id' => $id]);
+            $response = Kyc::perform('prepare-info', [
+                'contact_id' => $id,
+                'url' => Url::to(['@client/view', 'id' => $id], true),
+            ]);
             if (isset($response['url'])) {
                 return $this->redirect($response['url']);
             }
