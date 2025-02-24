@@ -17,7 +17,7 @@ use yii\bootstrap\Html;
 ]) ?>
 
 <p>
-    Your account functionality is currently limited due to a missing KYC status. To apply for KYC, please visit the customer’s profile page or create a support request.
+    Функциональность вашего аккаунта ограничена, из-за отсутствия KYC. Чтобы пройти KYC, перейдите на страницу профиля клиента или создайте запрос в службу поддержки
 </p>
 
 <?= Html::button(Yii::t('hipanel', 'OK'),
