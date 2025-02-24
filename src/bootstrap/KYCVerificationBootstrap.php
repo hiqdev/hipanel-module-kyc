@@ -10,31 +10,19 @@
 
 namespace hipanel\modules\kyc\bootstrap;
 
-use hipanel\modules\client\widgets\ForceVerificationBlock;
-use hipanel\modules\client\widgets\verification\ClientVerification;
-use hipanel\modules\kyc\widgets\ForceKYCVerification;
-use Yii;
 use yii\base\BootstrapInterface;
 use yii\base\Event;
+use yii\web\View;
+use Yii;
 
 class KYCVerificationBootstrap implements BootstrapInterface
 {
     public function bootstrap($application)
     {
-        Event::on(ForceVerificationBlock::class, ForceVerificationBlock::EVENT_COLLECT_WIDGETS, function ($event) {
-            /** @var ForceVerificationBlock $sender */
-            $sender = $event->sender;
-
-            if (!isset($sender->contact)) {
-                return;
-            }
-
-            foreach (['kyc'] as $attribute) {
-                $sender->registerWidget($attribute, Yii::createObject([
-                    'class' => ForceKYCVerification::class,
-                    'contact' => $sender->contact,
-                ]));
-            }
+        Yii::$app->view->on(View::EVENT_END_BODY, function () {
+            echo \hipanel\modules\kyc\widgets\KYCNotification::widget([
+            ]);
         });
     }
 }
+
