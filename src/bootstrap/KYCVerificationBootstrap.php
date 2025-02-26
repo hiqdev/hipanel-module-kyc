@@ -11,6 +11,7 @@
 namespace hipanel\modules\kyc\bootstrap;
 
 use yii\base\BootstrapInterface;
+use hiqdev\yii2\cart\controllers\CartController;
 use yii\base\Event;
 use yii\web\View;
 use Yii;
@@ -22,6 +23,17 @@ class KYCVerificationBootstrap implements BootstrapInterface
         Yii::$app->view->on(View::EVENT_END_BODY, function () {
             echo \hipanel\modules\kyc\widgets\KYCNotification::widget([
             ]);
+        });
+
+        Event::on(CartController::class, CartController::EVENT_BEFORE_ACTION, function ($event) {
+            if ($event->sender->action->id !== 'index') {
+                return ;
+            }
+            $user = Yii::$app->user;
+            if (!$user->isGuest && !$user->can('deposit')) {
+                Yii::$app->getResponse()->redirect('@kyc/warning');
+                Yii::$app->end();
+            }
         });
     }
 }

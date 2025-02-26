@@ -47,6 +47,11 @@ class KycController extends CrudController
         ];
     }
 
+    public function actionWarning()
+    {
+        return $this->render('warning', []);
+    }
+
     public function actionVerify($id)
     {
         try {
