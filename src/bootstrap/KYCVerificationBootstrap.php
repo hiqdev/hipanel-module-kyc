@@ -26,7 +26,7 @@ class KYCVerificationBootstrap implements BootstrapInterface
             return ;
         }
 
-        if (in_array($user->_identity->type, [Client::TYPE_SELLER, Client::TYPE_CLIENT], true)) {
+        if (!in_array($user->identity->type, [Client::TYPE_SELLER, Client::TYPE_CLIENT], true)) {
             return ;
         }
 
