@@ -42,7 +42,7 @@ class Kyc extends Model
         return [
             [['id', 'state_id', 'provider_id', 'contact_id'], 'integer'],
             [['state', 'state_label', 'url'], 'string'],
-            [['id', 'state'], 'required', 'on' => 'update'],
+            [['contact_id', 'state'], 'required', 'on' => 'update'],
             [['data'], 'safe'],
         ];
     }
