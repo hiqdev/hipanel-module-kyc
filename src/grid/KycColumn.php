@@ -37,12 +37,13 @@ class KycColumn extends DataColumn
 
     public function getDataCellValue($model, $key, $index)
     {
-        $kyc = $this->getKycModel($model);
+        $kyc = $this->getKycModel($model) ?? new Kyc(['contact_id' => $model->id]);
         if ($this->isAdvancedAccess()) {
             return XEditable::widget([
                 'model' => $kyc,
                 'attribute' => 'state',
                 'pluginOptions' => [
+                    'data-pk' => $model->id,
                     'url' => Url::toRoute(['@kyc/set-status']),
                     'type' => 'select',
                     'source' => $kyc->getStatusOptions(),
@@ -61,7 +62,7 @@ class KycColumn extends DataColumn
     private function getKycModel($model): ?Kyc
     {
         return match (true) {
-            $model instanceof Client => $model->contact->kyc,
+            $model instanceof Client => $model->contact?->kyc,
             $model instanceof Contact => $model->kyc,
             default => null,
         };

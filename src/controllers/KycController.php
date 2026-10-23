@@ -4,6 +4,7 @@ namespace hipanel\modules\kyc\controllers;
 
 use Exception;
 use hipanel\actions\SmartUpdateAction;
+use hipanel\actions\XEditableAction;
 use hipanel\base\CrudController;
 use hipanel\filters\EasyAccessControl;
 use hipanel\helpers\ArrayHelper;
@@ -43,6 +44,15 @@ class KycController extends CrudController
                 'class'    => SmartUpdateAction::class,
                 'success'  => Yii::t('hipanel:client', 'Client verification status has been changed'),
                 'scenario' => 'update',
+                'POST xeditable' => [
+                    'class' => XEditableAction::class,
+                    'collectionLoader' => static function (XEditableAction $action, array $data): void {
+                        // pk is the contact id: a contact may have no KYC record yet
+                        $action->collection->load(array_map(static fn(array $row): array => [
+                            'contact_id' => ArrayHelper::remove($row, 'id'),
+                        ] + $row, $data));
+                    },
+                ],
             ],
         ];
     }
